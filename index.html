@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>DTE Aerials Test</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+		<script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
+		<style type="text/css">
+			#mapDiv {
+				width: 90%;
+				height: 90vh;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="mapDiv"></div>
+		<script type="text/javascript" src="geoJson/dteAerials.js"></script>
+		<script type="text/javascript">
+			var layer = new L.StamenTileLayer("toner-lite");
+			var map = new L.Map("mapDiv", {
+				center: new L.LatLng(42.67, -82.91),
+				zoom: 11
+			});
+			map.addLayer(layer);
+
+			L.geoJSON(dteMacomb1956,{
+				onEachFeature: onEachFeature
+			}).addTo(map);
+
+			function onEachFeature(feature,layer) {
+				var featureId = feature.properties.id;
+				var popupContent = '<h1>'+feature.properties.id+'</h1><p>'+feature.geometry.coordinates[0]+', '+feature.geometry.coordinates[1]+'</p><p><a href="images/'+feature.properties.county+'/'+feature.properties.year+'/lowRes/dte_aerial_'+feature.properties.id+'.jpg">72&nbsp;dpi</a>&nbsp;<a href="images/'+feature.properties.county+'/'+feature.properties.year+'/hiRes/dte_aerial_'+feature.properties.id+'.jpg">600&nbsp;dpi</a></p>';
+				layer.bindPopup(popupContent, {
+					className: "dtePopup"
+				});
+			}
+		</script>
+	</body>
+</html>
