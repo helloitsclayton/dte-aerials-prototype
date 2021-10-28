@@ -9,3 +9,5 @@ Two geoJSON files will be created in the local directory `geoJson/`:
 - `dteAerials_Access.js` (human-readable version)
 
 These files are erased and rewritten each time `dteJSONtoGEO.php` is run.
+
+`index.hmtl` displays the geoGSON data using LeafletJS.
