@@ -3,31 +3,60 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>DTE Aerials Test</title>
-		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-		<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-		<script type="text/javascript" src="https://stamen-maps.a.ssl.fastly.net/js/tile.stamen.js"></script>
+		<title>DTE Aerials Prototype</title>
+		<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+			integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+			crossorigin=""/>
+		<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+			integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+			crossorigin=""></script>
 		<style type="text/css">
-			#mapDiv {
-				width: 90%;
+			#contentWrapper {
+				display: flex;
+				flex-direction: row;
 				height: 90vh;
+			}
+
+			#mapDiv {
+				flex: 4 1 auto;
+			}
+
+			#mapFilters {
+				flex: 1 1 auto;
+			}
+
+			#mapFilters li {
+				cursor: pointer;
 			}
 		</style>
 	</head>
 	<body>
-		<div id="mapDiv"></div>
+		<div id="contentWrapper">
+			<div id="mapDiv"></div>
+			<div id="mapFilters">
+				<h1>Load Data</h1>
+				<h2>Macomb County</h2>
+				<ul>
+					<li onclick="pinsLoad(dteMacomb1949)">1949</li>
+					<li onclick="pinsLoad(dteMacomb1952)">1952</li>
+					<li onclick="pinsLoad(dteMacomb1956)">1956</li>
+					<li onclick="pinsLoad(dteMacomb1961)">1961</li>
+				</ul>
+			</div>
+		</div>
 		<script type="text/javascript" src="geoJson/dteAerials.js"></script>
 		<script type="text/javascript">
-			var layer = new L.StamenTileLayer("toner-lite");
+			var layer = new L.tileLayer('https://tiles.stadiamaps.com/tiles/stamen_toner_lite/{z}/{x}/{y}{r}.{ext}', {
+				attribution: '&copy; <a href="https://www.stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://www.stamen.com/" target="_blank">Stamen Design</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			ext: 'png'
+			});
 			var map = new L.Map("mapDiv", {
 				center: new L.LatLng(42.67, -82.91),
 				zoom: 11
 			});
 			map.addLayer(layer);
 
-			L.geoJSON(dteMacomb1956,{
-				onEachFeature: onEachFeature
-			}).addTo(map);
+			var photoPins = new L.geoJSON();
 
 			function onEachFeature(feature,layer) {
 				var featureId = feature.properties.id;
@@ -35,6 +64,17 @@
 				layer.bindPopup(popupContent, {
 					className: "dtePopup"
 				});
+			}
+
+			function pinsLoad(countyYear) {
+				map.removeLayer(photoPins);
+				photoPins = L.geoJSON(countyYear,{
+					pointToLayer: function(feature,latlng) {
+						return L.marker(latlng);
+					},
+					onEachFeature: onEachFeature
+				});
+				map.addLayer(photoPins);
 			}
 		</script>
 	</body>
